@@ -1,0 +1,17 @@
+{
+  "name": "aarkid-biotech-site",
+  "version": "1.0.0",
+  "description": "Static website for Aarkid Biotech Pvt. Ltd. with an interactive medicine catalogue search.",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/site.test.mjs",
+    "check": "node --check script.js && node --check medicine-matcher.js && node --check medicine-search.js && node --test tests/site.test.mjs"
+  },
+  "keywords": [
+    "aarkid-biotech",
+    "pharmaceutical",
+    "static-site",
+    "medicine-catalogue"
+  ],
+  "license": "UNLICENSED"
+}
