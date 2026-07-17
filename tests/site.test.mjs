@@ -10,7 +10,7 @@ const readProjectFile = (path) => readFile(new URL(`../${path}`, import.meta.url
 test('the page exposes the core sections through navigation', async () => {
   const html = await readProjectFile('index.html');
 
-  for (const section of ['home', 'about', 'products', 'contact']) {
+  for (const section of ['home', 'about', 'leadership', 'products', 'contact']) {
     assert.match(html, new RegExp(`href=["']#${section}["']`));
     assert.match(html, new RegExp(`id=["']${section}["']`));
   }
@@ -20,12 +20,12 @@ test('company details from the source site are preserved', async () => {
   const html = await readProjectFile('index.html');
 
   for (const detail of [
-    'Aarkid Biotech Pvt. Ltd.',
+    'Aarkid Biotech Private Limited',
     'Caring for life',
-    '9359935292',
-    '8958742354',
-    '9997945769',
-    '9412869171',
+    'Aarkidbiotech@gmail.com',
+    'Chairman',
+    'Dr. Mudit Mittal',
+    'Executive Director',
     'B-1/639 A',
     'B-1, West Delhi',
   ]) {
@@ -54,39 +54,54 @@ test('only local project imagery is referenced', async () => {
 
   assert.doesNotMatch(html, /canva\.site\/_assets|blob:https:/);
   assert.match(html, /assets\/aarkid-logo-transparent\.png/);
+  assert.match(html, /assets\/aarkid-logo-footer-transparent\.png/);
   assert.match(html, /assets\/lab-scientist\.jpg/);
   assert.match(html, /assets\/pharmaceutical-formulation\.jpg/);
 });
 
 test('the source product catalogue is preserved as HTML', async () => {
   const html = await readProjectFile('index.html');
-
-  for (const product of [
-    'AARCID-DSR',
-    'AARCLAV 625',
-    'AARFIX-CV 200',
-    'AARGESIC-SP',
-    'AARVITAL',
-    'CEFORID 500',
+  const productNames = [...html.matchAll(/<details class="product-card reveal">[\s\S]*?<summary>[\s\S]*?<strong>(.*?)<\/strong>/g)].map((match) => match[1]);
+  const expectedProducts = [
+    'ARCID 40',
+    'ARCID-DSR',
+    'ARCLAV 228.5 DS',
+    'ARCLAV 625',
     'COUGHRID DX',
     'COUGHRID LS',
-    'MUCIRID 600',
-    'POLARID Drops',
+    'POLARID DROP',
+    'POLARID SYRUP',
     'SULTARID 375',
-    'SULTARID-KID 250',
-  ]) {
+    'AARFIX-CV 200',
+    'AARGESIC-SP',
+    'CEFORID 500',
+    'AARVITAL',
+    'AARLAC',
+    'DIARHERID-M',
+    'FEVERRID',
+  ];
+
+  assert.deepEqual(productNames, expectedProducts);
+  for (const product of expectedProducts) {
     assert.ok(html.includes(product), `Missing product: ${product}`);
   }
+
+  assert.match(html, /16 medicines/);
+  assert.doesNotMatch(html, /SULTARID-KID 250/);
+  assert.doesNotMatch(html, /MUCIRID 600/);
+  assert.doesNotMatch(html, /AARCID-DSR/);
+  assert.doesNotMatch(html, /AARCLAV 625/);
 });
 
 test('the medicine finder returns catalogue matches and defers unsafe requests', () => {
   const acidity = findMedicineMatch('I have acidity and heartburn');
   const mucusCough = findMedicineMatch('cough with mucus');
 
-  assert.equal(acidity.medicine.name, 'AARCID-DSR');
-  assert.equal(acidity.results[0].medicine.name, 'AARCID-DSR');
+  assert.equal(acidity.results[0].medicine.name, 'ARCID 40');
+  assert.ok(acidity.results.some((result) => result.medicine.name === 'ARCID-DSR'));
   assert.equal(mucusCough.medicine.name, 'COUGHRID LS');
-  assert.ok(mucusCough.results.some((result) => result.medicine.name === 'MUCIRID 600'));
+  assert.ok(findMedicineMatch('loose motion probiotic').results.some((result) => result.medicine.name === 'AARLAC'));
+  assert.ok(findMedicineMatch('diarrhoea stomach infection').results.some((result) => result.medicine.name === 'DIARHERID-M'));
   assert.equal(findMedicineMatch('I need an antibiotic for an infection').type, 'clinician');
   assert.equal(findMedicineMatch('chest pain and trouble breathing').type, 'urgent');
 });
@@ -95,7 +110,8 @@ test('the medicine finder gives Google-like related catalogue context for stomac
   const result = findMedicineMatch('stomach ache after meals with gas');
 
   assert.equal(result.type, 'match');
-  assert.equal(result.results[0].medicine.name, 'AARCID-DSR');
+  assert.equal(result.results[0].medicine.name, 'ARCID 40');
+  assert.ok(result.results.some((item) => item.medicine.name === 'ARCID-DSR'));
   assert.ok(result.relatedInfo.some((info) => info.toLowerCase().includes('stomach ache')));
   assert.ok(result.careAdvice.some((advice) => advice.toLowerCase().includes('severe abdominal pain')));
   assert.ok(result.results[0].medicine.caution.toLowerCase().includes('severe'));
@@ -112,4 +128,29 @@ test('the Medicines navigation item leads to the catalogue finder', async () => 
   assert.match(html, /src=["']medicine-matcher\.js\?v=\d+["']\s+defer/);
   assert.match(html, /src=["']medicine-search\.js\?v=\d+["']\s+defer/);
   assert.doesNotMatch(html, /type=["']module["'][^>]+medicine-search/);
+});
+
+test('the about and leadership sections focus on care and delivery', async () => {
+  const html = await readProjectFile('index.html');
+
+  assert.match(html, /Aarkid Biotech Private Limited is a medicine-focused company/);
+  assert.match(html, /focuses on specific healthcare needs/);
+  assert.doesNotMatch(html, /We do not present ourselves as a manufacturing unit/);
+  assert.doesNotMatch(html, /Our approach/);
+  assert.match(html, /Leadership testimonials/);
+  assert.match(html, /data-scroll-rail-section/);
+  assert.match(html, /data-scroll-rail/);
+  assert.match(html, /leader-photo-placeholder/);
+  assert.match(html, /our vision is built on trust, integrity/);
+  assert.match(html, /operational excellence, timely delivery/);
+  assert.match(html, /Healthcare is constantly evolving/);
+  assert.match(html, /Success in healthcare is built on consistency/);
+  assert.match(html, /Manik Mittal/);
+  assert.match(html, /Dr\. Mudit Mittal/);
+  assert.match(html, /Namit Mittal/);
+  assert.match(html, /Ashok Sharma/);
+  assert.doesNotMatch(html, /href=["']tel:/);
+  assert.match(html, /href=["']mailto:Aarkidbiotech@gmail\.com["']/);
+  assert.doesNotMatch(html, /research,\s*develop/i);
+  assert.doesNotMatch(html, /To develop and deliver/i);
 });

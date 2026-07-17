@@ -42,6 +42,8 @@ window.addEventListener('scroll', updateHeader, { passive: true });
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const revealItems = [...document.querySelectorAll('.reveal:not(.is-visible)')];
+const scrollRailSection = document.querySelector('[data-scroll-rail-section]');
+const scrollRail = document.querySelector('[data-scroll-rail]');
 
 document.querySelectorAll('[data-reveal-stagger]').forEach((group) => {
   [...group.querySelectorAll(':scope > .reveal')].forEach((item, index) => {
@@ -68,6 +70,31 @@ if (reduceMotion || !('IntersectionObserver' in window)) {
   );
 
   revealItems.forEach((item) => revealObserver.observe(item));
+}
+
+if (scrollRailSection && scrollRail && !reduceMotion) {
+  let railFrame = 0;
+
+  const updateScrollRail = () => {
+    railFrame = 0;
+    const sectionBox = scrollRailSection.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const railWindow = scrollRail.parentElement;
+    const scrollableDistance = Math.max(scrollRail.scrollWidth - railWindow.clientWidth, 0);
+    const travelDistance = Math.max(sectionBox.height - viewportHeight, 1);
+    const progress = Math.min(Math.max((0 - sectionBox.top) / travelDistance, 0), 1);
+
+    scrollRail.style.setProperty('--rail-shift', `${-(scrollableDistance * progress)}px`);
+  };
+
+  const requestScrollRailUpdate = () => {
+    if (railFrame) return;
+    railFrame = requestAnimationFrame(updateScrollRail);
+  };
+
+  updateScrollRail();
+  window.addEventListener('scroll', requestScrollRailUpdate, { passive: true });
+  window.addEventListener('resize', requestScrollRailUpdate);
 }
 
 const sections = navLinks

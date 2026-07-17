@@ -1,12 +1,13 @@
 # Aarkid Biotech Website
 
-Static website for Aarkid Biotech Pvt. Ltd. It includes a responsive marketing site, product catalogue, professional motion effects, and a symptom-based medicine catalogue search.
+Static website for Aarkid Biotech Private Limited. It includes a responsive company site, leadership sections, product catalogue, professional motion effects, and a symptom-based medicine catalogue search.
 
 ## Features
 
 - Responsive single-page website
 - Clean professional animations with reduced-motion support
 - Medicines top-bar section
+- Emotional About page, leadership profiles, and chairman message
 - Catalogue search with ranked related results
 - Safety messaging for urgent, clinician-only, and antibiotic-related searches
 - Local assets only, suitable for GitHub Pages

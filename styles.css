@@ -120,10 +120,11 @@ a {
 }
 
 .brand {
-  display: grid;
-  width: 7rem;
+  display: flex;
+  width: auto;
   height: 5rem;
-  place-items: center;
+  gap: 0.8rem;
+  align-items: center;
 }
 
 .brand img {
@@ -139,6 +140,16 @@ a {
 .brand:hover img {
   filter: drop-shadow(0 0.35rem 0.55rem rgba(11, 38, 56, 0.12));
   transform: translateY(-0.1rem) scale(1.025);
+}
+
+.brand-name {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .site-navigation {
@@ -478,6 +489,32 @@ em {
   margin: 0 0 1.25rem;
 }
 
+.about-note {
+  display: grid;
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding: clamp(1.4rem, 3vw, 2rem);
+  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 0.65fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  border-left: 3px solid var(--green-dark);
+  background: var(--mist);
+}
+
+.about-note span {
+  color: var(--green-dark);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.about-note p {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(1.45rem, 2.4vw, 2.15rem);
+  line-height: 1.18;
+}
+
 .principles-grid {
   display: grid;
   margin-top: clamp(4rem, 8vw, 7rem);
@@ -562,7 +599,7 @@ em {
   display: grid;
   width: 100%;
   max-width: none;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
 }
 
 .purpose-card {
@@ -571,7 +608,7 @@ em {
 }
 
 .purpose-card-light {
-  padding-right: clamp(3rem, 8vw, 8rem);
+  padding-right: max(24px, calc((100vw - 1180px) / 2));
   background: var(--mint);
 }
 
@@ -1012,4 +1049,118 @@ em {
   margin: 2rem 0 0;
   color: #63737c;
   font-size: 0.7rem;
+}
+
+.leadership {
+  min-height: min(190vh, 96rem);
+  background: var(--white);
+}
+
+.leadership-stage {
+  position: sticky;
+  top: clamp(5.75rem, 12vh, 8rem);
+}
+
+.leadership .section-heading {
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.leadership-rail-window {
+  overflow: hidden;
+  padding-block: 0.25rem 1rem;
+}
+
+.leadership-rail {
+  display: flex;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  width: max-content;
+  transform: translate3d(var(--rail-shift, 0px), 0, 0);
+  will-change: transform;
+}
+
+.leader-story {
+  display: grid;
+  width: min(72vw, 42rem);
+  min-height: clamp(20rem, 42vh, 25rem);
+  padding: clamp(0.9rem, 1.8vw, 1.2rem);
+  grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.4rem);
+  align-items: center;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.leader-photo-placeholder {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px dashed rgba(11, 38, 56, 0.25);
+  background:
+    linear-gradient(135deg, rgba(223, 234, 214, 0.7), rgba(237, 243, 240, 0.55)),
+    var(--mist);
+  color: rgba(11, 38, 56, 0.58);
+}
+
+.leader-photo-placeholder span {
+  display: grid;
+  width: 4.5rem;
+  height: 4.5rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.leader-story-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.leader-story-copy > span {
+  color: var(--green-dark);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.leader-story-copy h3 {
+  margin: 0.65rem 0 0.8rem;
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 2.8vw, 2.45rem);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.leader-story-copy blockquote {
+  margin: 0 0 1rem;
+  color: var(--ink);
+  font-size: clamp(0.82rem, 1.05vw, 0.98rem);
+  line-height: 1.6;
+}
+
+.leader-story-copy a {
+  width: fit-content;
+  border-bottom: 1px solid var(--ink);
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+@media (hover: hover) {
+  .leader-story {
+    transition: transform var(--motion-medium) var(--ease-snappy), box-shadow var(--motion-medium) ease;
+  }
+
+  .leader-story:hover {
+    box-shadow: 0 1.4rem 2.8rem rgba(11, 38, 56, 0.1);
+    transform: translateY(-0.35rem);
+  }
 }

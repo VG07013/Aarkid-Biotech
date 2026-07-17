@@ -1,7 +1,7 @@
 {
   "name": "aarkid-biotech-site",
   "version": "1.0.0",
-  "description": "Static website for Aarkid Biotech Pvt. Ltd. with an interactive medicine catalogue search.",
+  "description": "Static website for Aarkid Biotech Private Limited with an interactive medicine catalogue search.",
   "private": true,
   "scripts": {
     "test": "node --test tests/site.test.mjs",
