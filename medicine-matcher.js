@@ -1,20 +1,20 @@
 const medicines = [
   {
-    name: 'ARCID 40',
+    name: 'AARCID 40',
     use: 'acidity, heartburn, indigestion, and reflux-like symptoms',
     contains: 'Pantoprazole',
     caution: 'Useful only when the discomfort sounds acidity-related. New, severe, or persistent stomach pain needs a clinician.',
     terms: ['acidity', 'acidic', 'heartburn', 'reflux', 'indigestion', 'gastric', 'burning', 'gas', 'bloating', 'stomach burning', 'sour burp', 'after meals'],
   },
   {
-    name: 'ARCID-DSR',
+    name: 'AARCID-DSR',
     use: 'acidity, heartburn, indigestion, and reflux-like symptoms',
     contains: 'Pantoprazole + Domperidone',
     caution: 'Useful only when the discomfort sounds acidity-related. New, severe, or persistent stomach pain needs a clinician.',
     terms: ['acidity', 'acidic', 'heartburn', 'reflux', 'indigestion', 'gastric', 'burning', 'gas', 'bloating', 'stomach burning', 'sour burp', 'after meals'],
   },
   {
-    name: 'ARCLAV 228.5 DS',
+    name: 'AARCLAV 228.5 DS',
     use: 'bacterial infections in children, as decided by a doctor',
     contains: 'Amoxicillin + Clavulanate',
     caution: 'Antibiotics should be selected only by a qualified clinician.',
@@ -22,7 +22,7 @@ const medicines = [
     requiresClinician: true,
   },
   {
-    name: 'ARCLAV 625',
+    name: 'AARCLAV 625',
     use: 'bacterial infections, as decided by a doctor',
     contains: 'Amoxicillin + Clavulanate',
     caution: 'Antibiotics should be selected only by a qualified clinician.',
