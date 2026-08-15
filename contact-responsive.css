@@ -355,40 +355,32 @@
     grid-template-columns: 1fr;
   }
 
-  /* The pinned, scroll-driven rail is replaced by a plain swipeable
-     carousel: touch scrolling stays smooth and no card is left clipped. */
+  /* The rail stays scroll-driven, as on desktop. A phone cannot pin the
+     heading and a card at once, so only the strip is pinned: the heading
+     scrolls away first, then the cards travel sideways as the page scrolls.
+     The stage needs room for the strip to travel through, and it has to be
+     content-box room -- a sticky child does not move through its parent's
+     padding -- so script.js sets min-height from the strip's actual width. */
   .leadership {
     min-height: auto;
   }
 
   .leadership-stage {
-    position: static;
+    position: relative;
+    top: auto;
   }
 
   .leadership-rail-window {
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 0.5rem;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .leadership-rail-window::-webkit-scrollbar {
-    display: none;
-  }
-
-  .leadership-rail {
-    transform: none;
-    will-change: auto;
+    position: sticky;
+    top: max(6.75rem, 18vh);
+    overflow: hidden;
   }
 
   .leader-story {
-    width: min(82vw, 34rem);
-    min-height: 22rem;
+    width: min(84vw, 34rem);
+    min-height: 0;
     flex: 0 0 auto;
-    grid-template-columns: minmax(9rem, 12rem) minmax(0, 1fr);
-    scroll-snap-align: start;
+    grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr);
   }
 
   .principle-card {
@@ -525,15 +517,26 @@
     gap: 0.9rem;
   }
 
+  /* The card is pinned in the viewport, so its height has to clear the
+     shortest phone. Stacking gives the quote the full card width, which
+     costs far fewer lines than a narrow column beside the portrait. */
   .leader-story {
     width: 86vw;
     min-height: auto;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
   }
 
   .leader-photo-frame {
-    width: min(100%, 13rem);
-    margin-inline: auto;
+    width: min(100%, 8.5rem);
+  }
+
+  .leader-story-copy h3 {
+    margin: 0.35rem 0 0.55rem;
+  }
+
+  .leader-story-copy blockquote {
+    margin-bottom: 0;
   }
 
   .purpose-card {
@@ -666,8 +669,24 @@
     font-size: 0.98rem;
   }
 
+  /* Last of the room on the smallest phones still in use, so the pinned
+     card clears the viewport rather than losing its final line. */
+  .leadership-rail-window {
+    top: max(6.4rem, 10vh);
+  }
+
   .leader-story {
     width: 88vw;
+    padding: 0.8rem;
+  }
+
+  .leader-photo-frame {
+    width: min(100%, 7.25rem);
+  }
+
+  .leader-story-copy blockquote {
+    font-size: 0.78rem;
+    line-height: 1.5;
   }
 }
 
