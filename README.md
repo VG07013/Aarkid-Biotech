@@ -4,7 +4,7 @@ Static website for Aarkid Biotech Private Limited. It includes a responsive comp
 
 ## Features
 
-- Responsive single-page website
+- Responsive single-page website, from 320px phones through desktop
 - Clean professional animations with reduced-motion support
 - Medicines top-bar section
 - Emotional About page, leadership profiles, and chairman message
@@ -17,15 +17,15 @@ Static website for Aarkid Biotech Private Limited. It includes a responsive comp
 
 ```text
 .
-+-- assets/
-+-- tests/
-+-- contact-responsive.css
-+-- index.html
-+-- medicine-matcher.js
-+-- medicine-search.js
++-- assets/                  images referenced by index.html
++-- tests/                   node --test suite
++-- index.html               the whole site, one page
++-- styles.css               base and desktop styling
++-- contact-responsive.css   contact, footer, motion, and all breakpoints
++-- script.js                navigation, reveals, leadership rail
++-- medicine-matcher.js      symptom to catalogue matching
++-- medicine-search.js       search form rendering
 +-- package.json
-+-- script.js
-+-- styles.css
 ```
 
 ## Run Locally

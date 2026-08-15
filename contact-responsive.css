@@ -531,7 +531,6 @@
     grid-template-columns: 1fr;
   }
 
-  .leader-photo-placeholder,
   .leader-photo-frame {
     width: min(100%, 13rem);
     margin-inline: auto;

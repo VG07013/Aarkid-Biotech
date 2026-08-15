@@ -1,8 +1,0 @@
-{
-  "name": "aarkid-biotech-site",
-  "private": true,
-  "scripts": {
-    "test": "node --test tests/site.test.mjs",
-    "check": "node --check script.js && node --test tests/site.test.mjs"
-  }
-}
