@@ -3,7 +3,7 @@ const menuToggle = document.querySelector('[data-menu-toggle]');
 const navigation = document.querySelector('[data-navigation]');
 const navLinks = [...document.querySelectorAll('[data-nav-link]')];
 const year = document.querySelector('[data-year]');
-const mobileBreakpoint = window.matchMedia('(max-width: 680px)');
+const mobileBreakpoint = window.matchMedia('(max-width: 900px)');
 
 const setMenuOpen = (isOpen) => {
   menuToggle.setAttribute('aria-expanded', String(isOpen));
@@ -75,8 +75,16 @@ if (reduceMotion || !('IntersectionObserver' in window)) {
 if (scrollRailSection && scrollRail && !reduceMotion) {
   let railFrame = 0;
 
+  // Below 900px the rail is a plain swipeable carousel, so the scroll-driven
+  // transform must stay out of the way or it fights the native scrolling.
   const updateScrollRail = () => {
     railFrame = 0;
+
+    if (mobileBreakpoint.matches) {
+      scrollRail.style.setProperty('--rail-shift', '0px');
+      return;
+    }
+
     const sectionBox = scrollRailSection.getBoundingClientRect();
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     const railWindow = scrollRail.parentElement;
@@ -95,6 +103,10 @@ if (scrollRailSection && scrollRail && !reduceMotion) {
   updateScrollRail();
   window.addEventListener('scroll', requestScrollRailUpdate, { passive: true });
   window.addEventListener('resize', requestScrollRailUpdate);
+  mobileBreakpoint.addEventListener('change', () => {
+    scrollRail.parentElement.scrollLeft = 0;
+    requestScrollRailUpdate();
+  });
 }
 
 const sections = navLinks
