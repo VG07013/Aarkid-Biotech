@@ -73,64 +73,26 @@ if (reduceMotion || !('IntersectionObserver' in window)) {
 }
 
 if (scrollRailSection && scrollRail && !reduceMotion) {
-  const railWindow = scrollRail.parentElement;
-  const railStage = railWindow.parentElement;
   let railFrame = 0;
 
-  const clampUnit = (value) => Math.min(Math.max(value, 0), 1);
+  // Below 900px the rail is a plain swipeable carousel, so the scroll-driven
+  // transform must stay out of the way or it fights the native scrolling.
+  const updateScrollRail = () => {
+    railFrame = 0;
 
-  const railScrollableDistance = () => Math.max(scrollRail.scrollWidth - railWindow.clientWidth, 0);
-
-  // Once the strip is pinned its offsetTop reports the pinned position, not
-  // where it sits in the flow, so the resting offset is measured with sticky
-  // switched off and cached. Only ever called off the scroll path.
-  let railRestingOffset = 0;
-
-  const measureRailRestingOffset = () => {
-    const inlinePosition = railWindow.style.position;
-    railWindow.style.position = 'static';
-    railRestingOffset = railWindow.offsetTop;
-    railWindow.style.position = inlinePosition;
-  };
-
-  // The pinned strip needs somewhere to travel, and it must be content-box
-  // room: a sticky child does not move through its parent's padding. Sizing
-  // it from the strip's own width keeps the sideways travel in step with the
-  // scrolling on every screen instead of guessing at a viewport multiple.
-  const syncRailTravel = () => {
-    if (!mobileBreakpoint.matches) {
-      railStage.style.removeProperty('min-height');
-      return;
-    }
-
-    measureRailRestingOffset();
-    const travel = railRestingOffset + railWindow.offsetHeight + railScrollableDistance() * 1.15;
-    railStage.style.minHeight = `${Math.round(travel)}px`;
-  };
-
-  // Desktop pins the whole stage, so the rail tracks the section moving
-  // through the viewport. Below 900px only the strip is pinned, so it tracks
-  // how far that strip has been held back inside the stage instead.
-  const railProgress = () => {
     if (mobileBreakpoint.matches) {
-      const stageBox = railStage.getBoundingClientRect();
-      const stickyTop = parseFloat(getComputedStyle(railWindow).top) || 0;
-      const maxTravel = stageBox.height - railRestingOffset - railWindow.offsetHeight;
-
-      if (maxTravel <= 0) return 0;
-      return clampUnit((stickyTop - (stageBox.top + railRestingOffset)) / maxTravel);
+      scrollRail.style.setProperty('--rail-shift', '0px');
+      return;
     }
 
     const sectionBox = scrollRailSection.getBoundingClientRect();
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const railWindow = scrollRail.parentElement;
+    const scrollableDistance = Math.max(scrollRail.scrollWidth - railWindow.clientWidth, 0);
     const travelDistance = Math.max(sectionBox.height - viewportHeight, 1);
+    const progress = Math.min(Math.max((0 - sectionBox.top) / travelDistance, 0), 1);
 
-    return clampUnit((0 - sectionBox.top) / travelDistance);
-  };
-
-  const updateScrollRail = () => {
-    railFrame = 0;
-    scrollRail.style.setProperty('--rail-shift', `${-(railScrollableDistance() * railProgress())}px`);
+    scrollRail.style.setProperty('--rail-shift', `${-(scrollableDistance * progress)}px`);
   };
 
   const requestScrollRailUpdate = () => {
@@ -138,18 +100,13 @@ if (scrollRailSection && scrollRail && !reduceMotion) {
     railFrame = requestAnimationFrame(updateScrollRail);
   };
 
-  // Travel room is measured, so it has to be resynced before the rail reads
-  // geometry back, and again once late-loading images settle the layout.
-  const resetScrollRail = () => {
-    syncRailTravel();
-    updateScrollRail();
-  };
-
-  resetScrollRail();
-  window.addEventListener('load', resetScrollRail);
+  updateScrollRail();
   window.addEventListener('scroll', requestScrollRailUpdate, { passive: true });
-  window.addEventListener('resize', resetScrollRail);
-  mobileBreakpoint.addEventListener('change', resetScrollRail);
+  window.addEventListener('resize', requestScrollRailUpdate);
+  mobileBreakpoint.addEventListener('change', () => {
+    scrollRail.parentElement.scrollLeft = 0;
+    requestScrollRailUpdate();
+  });
 }
 
 const sections = navLinks
