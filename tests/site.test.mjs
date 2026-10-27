@@ -1,11 +1,25 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import test from 'node:test';
 
-const { findMedicineMatch } = createRequire(import.meta.url)('../medicine-matcher.js');
+const { findMedicineMatch, medicines } = createRequire(import.meta.url)('../medicine-matcher.js');
 
 const readProjectFile = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
+const readProjectBytes = (path) => readFile(new URL(`../${path}`, import.meta.url));
+
+const imageSize = (bytes) => {
+  if (bytes.readUInt32BE(0) === 0x89504e47) return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  let offset = 2;
+  while (offset < bytes.length) {
+    const marker = bytes[offset + 1];
+    if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+      return { width: bytes.readUInt16BE(offset + 7), height: bytes.readUInt16BE(offset + 5) };
+    }
+    offset += 2 + bytes.readUInt16BE(offset + 2);
+  }
+  throw new Error('Unknown image format');
+};
 
 test('the page exposes the core sections through navigation', async () => {
   const html = await readProjectFile('index.html');
@@ -158,4 +172,72 @@ test('the about and leadership sections focus on care and delivery', async () =>
   assert.match(html, /href=["']mailto:aarkidbiotech@gmail\.com["']/);
   assert.doesNotMatch(html, /research,\s*develop/i);
   assert.doesNotMatch(html, /To develop and deliver/i);
+});
+
+test('the catalogue HTML and the search data list the same medicines', async () => {
+  const html = await readProjectFile('index.html');
+  const cards = [...html.matchAll(/<summary>[\s\S]*?<strong>(.*?)<\/strong><small>Salt: (.*?)<\/small>/g)]
+    .map((match) => ({ name: match[1], salt: match[2] }));
+
+  assert.deepEqual(cards.map((card) => card.name), medicines.map((medicine) => medicine.name));
+  cards.forEach((card, index) => assert.equal(card.salt, medicines[index].contains, `Salt differs for ${card.name}`));
+  assert.match(html, new RegExp(`${medicines.length} medicines`));
+});
+
+test('the symptom search cannot submit natively before its script is ready', async () => {
+  const [html, js] = await Promise.all([readProjectFile('index.html'), readProjectFile('medicine-search.js')]);
+  const form = html.match(/<form[^>]*data-medicine-search[^>]*>/)[0];
+
+  assert.match(form, /method=["']post["']/);
+  assert.match(html, /<fieldset[^>]*disabled[^>]*data-medicine-fields/);
+  assert.match(js, /fields\.disabled = false/);
+});
+
+test('fonts are self-hosted and security headers are configured', async () => {
+  const [html, css, headers] = await Promise.all([
+    readProjectFile('index.html'),
+    readProjectFile('styles.css'),
+    readProjectFile('_headers'),
+  ]);
+
+  assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/);
+  assert.doesNotMatch(css, /DM Sans/);
+  for (const font of ['manrope-latin.woff2', 'newsreader-latin.woff2']) {
+    assert.match(css, new RegExp(`assets/fonts/${font.replace('.', '\\.')}`));
+    assert.ok((await stat(new URL(`../assets/fonts/${font}`, import.meta.url))).size > 0);
+  }
+  for (const header of [
+    'X-Content-Type-Options: nosniff',
+    'X-Frame-Options: DENY',
+    'Referrer-Policy:',
+    'Permissions-Policy:',
+    'Strict-Transport-Security:',
+    'Content-Security-Policy-Report-Only:',
+  ]) {
+    assert.ok(headers.includes(header), `Missing header: ${header}`);
+  }
+});
+
+test('image dimensions match the files and responsive variants exist', async () => {
+  const html = await readProjectFile('index.html');
+  const images = [...html.matchAll(/<img\b[^>]*>/g)].map(([tag]) => ({
+    src: tag.match(/src="([^"]+)"/)[1],
+    width: tag.match(/width="(\d+)"/)[1],
+    height: tag.match(/height="(\d+)"/)[1],
+  }));
+
+  assert.equal(images.length, 8);
+  for (const { src, width, height } of images) {
+    const size = imageSize(await readProjectBytes(src));
+    assert.deepEqual(size, { width: Number(width), height: Number(height) }, `Dimensions differ for ${src}`);
+  }
+
+  for (const [, srcset] of html.matchAll(/srcset="([^"]+)"/g)) {
+    for (const candidate of srcset.split(',')) {
+      const file = candidate.trim().split(' ')[0];
+      assert.ok((await stat(new URL(`../${file}`, import.meta.url))).size > 0, `Missing ${file}`);
+    }
+  }
+
+  assert.ok((await stat(new URL('../assets/aarkid-logo-footer-transparent.png', import.meta.url))).size < 100000);
 });

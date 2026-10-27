@@ -1,3 +1,19 @@
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("assets/fonts/manrope-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Newsreader";
+  font-style: normal;
+  font-weight: 500 600;
+  font-display: swap;
+  src: url("assets/fonts/newsreader-latin.woff2") format("woff2");
+}
+
 :root {
   --ink: #0b2638;
   --ink-soft: #294555;
@@ -9,7 +25,7 @@
   --white: #ffffff;
   --line: rgba(11, 38, 56, 0.15);
   --serif: "Newsreader", Georgia, serif;
-  --sans: "Manrope", "DM Sans", system-ui, sans-serif;
+  --sans: "Manrope", system-ui, sans-serif;
   --container: min(1180px, calc(100vw - 48px));
   --section: clamp(5.5rem, 9vw, 8.5rem);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -46,6 +62,10 @@ body.menu-open {
 img,
 svg {
   display: block;
+}
+
+picture {
+  display: contents;
 }
 
 img {
@@ -727,6 +747,28 @@ em {
 .medicine-search-controls .button { flex: 0 0 auto; }
 
 .medicine-search-disclaimer { margin-top: 0.8rem; }
+
+.medicine-search-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.medicine-search-fieldset:disabled {
+  opacity: 0.6;
+}
+
+.medicine-search-status {
+  margin: 0.8rem 0 0;
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.medicine-search-status[hidden] {
+  display: none;
+}
 
 .medicine-search-result {
   display: grid;

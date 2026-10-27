@@ -9,12 +9,8 @@
     />
     <meta name="theme-color" content="#0b2638" />
     <title>Aarkid Biotech Private Limited | Caring for Life</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;family=Newsreader:opsz,wght@6..72,500;6..72,600&amp;display=swap"
-      rel="stylesheet"
-    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="contact-responsive.css" />
     <script src="script.js" defer></script>
@@ -55,13 +51,21 @@
 
     <main id="main-content">
       <section id="home" class="hero" aria-labelledby="hero-title">
-        <img
-          class="hero-image"
-          src="assets/lab-scientist.jpg"
-          alt="A pharmaceutical scientist examining a vial in a modern laboratory"
-          width="1672"
-          height="941"
-        />
+        <picture>
+          <source
+            type="image/webp"
+            srcset="assets/lab-scientist-800.webp 800w, assets/lab-scientist-1200.webp 1200w, assets/lab-scientist-1672.webp 1672w"
+            sizes="100vw"
+          />
+          <img
+            class="hero-image"
+            src="assets/lab-scientist.jpg"
+            alt="A pharmaceutical scientist examining a vial in a modern laboratory"
+            width="1672"
+            height="941"
+            fetchpriority="high"
+          />
+        </picture>
         <div class="hero-wash" aria-hidden="true"></div>
         <div class="hero-grid container">
           <div class="hero-copy reveal is-visible">
@@ -188,7 +192,7 @@
               </article>
               <article class="leader-story">
                 <div class="leader-photo-frame">
-                  <img src="assets/namit-mittal.jpg" alt="Namit Mittal" width="1205" height="791" loading="lazy" />
+                  <img src="assets/namit-mittal.jpg" alt="Namit Mittal" width="1206" height="783" loading="lazy" />
                 </div>
                 <div class="leader-story-copy">
                   <span>Executive Director</span>
@@ -246,12 +250,15 @@
               <h3 id="medicine-finder-title">Search symptoms like a catalogue.</h3>
               <p>For example: “dry cough”, “acidity”, or “pain and swelling”.</p>
             </div>
-            <form class="medicine-search-form" data-medicine-search>
-              <label for="symptom-search">Symptom or health need</label>
-              <div class="medicine-search-controls">
-                <input id="symptom-search" name="symptom" type="search" autocomplete="off" placeholder="e.g. stomach ache or cough with mucus" required />
-                <button class="button button-primary" type="submit">Search catalogue</button>
-              </div>
+            <form class="medicine-search-form" method="post" action="#medicines" data-medicine-search>
+              <fieldset class="medicine-search-fieldset" disabled data-medicine-fields>
+                <label for="symptom-search">Symptom or health need</label>
+                <div class="medicine-search-controls">
+                  <input id="symptom-search" name="symptom" type="search" autocomplete="off" placeholder="e.g. stomach ache or cough with mucus" required />
+                  <button class="button button-primary" type="submit">Search catalogue</button>
+                </div>
+              </fieldset>
+              <p class="medicine-search-status" data-medicine-status>The catalogue search needs JavaScript. You can still browse every medicine in the catalogue below.</p>
               <p class="medicine-search-disclaimer">This searches our catalogue and shows related information. It does not diagnose conditions or replace a qualified clinician.</p>
             </form>
             <div class="medicine-search-result" data-medicine-result aria-live="polite" aria-atomic="true"></div>
@@ -259,13 +266,21 @@
 
           <div class="products-stage">
             <figure class="products-visual reveal">
-              <img
-                src="assets/pharmaceutical-formulation.jpg"
-                alt="A pharmaceutical formulation workspace with tablets, capsules, a vial, and laboratory glassware"
-                width="1536"
-                height="1024"
-                loading="lazy"
-              />
+              <picture>
+                <source
+                  type="image/webp"
+                  srcset="assets/pharmaceutical-formulation-640.webp 640w, assets/pharmaceutical-formulation-1024.webp 1024w, assets/pharmaceutical-formulation-1536.webp 1536w"
+                  sizes="(max-width: 900px) calc(100vw - 48px), 680px"
+                />
+                <img
+                  src="assets/pharmaceutical-formulation.jpg"
+                  alt="A pharmaceutical formulation workspace with tablets, capsules, a vial, and laboratory glassware"
+                  width="1536"
+                  height="1024"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
               <figcaption>Medicines selected with care</figcaption>
             </figure>
 
@@ -338,7 +353,7 @@
               </p>
             </details>
             <details class="product-card reveal">
-              <summary><span>For probiotic and gut-flora support</span><strong>AARLAC</strong><small>Salt: Probiotic strains + Prebiotic (FOS) + Zinc</small><i aria-hidden="true">+</i></summary>
+              <summary><span>For probiotic and gut-flora support</span><strong>AARLAC</strong><small>Salt: Probiotic strains + Prebiotic (FOS) + Saccharomyces boulardii + Zinc</small><i aria-hidden="true">+</i></summary>
               <p><strong>Usually prescribed for:</strong> probiotic and gut-flora support, as advised by a doctor.<br /><strong>Contains:</strong> a blend of nine natural probiotic strains, Fructo Oligo Saccharides (FOS), Saccharomyces boulardii, and Zinc sachet.</p>
             </details>
             <details class="product-card reveal">
@@ -403,7 +418,10 @@
     <footer class="site-footer">
       <div class="container footer-grid">
         <div class="footer-brand">
-          <img src="assets/aarkid-logo-footer-transparent.png" alt="Aarkid Biotech" width="252" height="176" />
+          <picture>
+            <source type="image/webp" srcset="assets/aarkid-logo-footer-transparent.webp" />
+            <img src="assets/aarkid-logo-footer-transparent.png" alt="Aarkid Biotech" width="504" height="355" loading="lazy" decoding="async" />
+          </picture>
           <p>Science with purpose.</p>
         </div>
         <nav aria-label="Footer navigation">
