@@ -1,8 +1,10 @@
 (function () {
   const form = document.querySelector('[data-medicine-search]');
   const result = document.querySelector('[data-medicine-result]');
+  const fields = document.querySelector('[data-medicine-fields]');
+  const status = document.querySelector('[data-medicine-status]');
 
-  if (!form || !result) return;
+  if (!form || !result || !fields) return;
 
   const clearNode = (node) => {
     while (node.firstChild) node.removeChild(node.firstChild);
@@ -149,4 +151,13 @@
     const symptom = new FormData(form).get('symptom');
     showSearchResults(findMedicineMatch(symptom));
   });
+
+  // The fieldset ships disabled so a failed script can never submit symptom text natively.
+  if (!getMatcher()) {
+    if (status) status.textContent = 'The catalogue search did not load. Refresh the page, or browse the catalogue below.';
+    return;
+  }
+
+  fields.disabled = false;
+  if (status) status.hidden = true;
 }());
